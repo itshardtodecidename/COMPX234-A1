@@ -29,7 +29,7 @@ class Assignment1:
         for i in range(self.NUM_MACHINES):
             m=self.machineThread(i,self)
             self.mThreads.append[m]
-            
+
             
         # Start all the threads
         # Write code here
@@ -67,6 +67,7 @@ class Assignment1:
             while self.outer.sim_active:
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
+                
                 # Grab the request at the head of the queue and print it
                 # Write code here
                 self.printDox(self.printerID)
@@ -76,9 +77,16 @@ class Assignment1:
             time.sleep(sleepSeconds)
 
         def printDox(self, printerID):
+
             print(f"Printer ID: {printerID} : now available")
+
+            self.outer.binary.acquire()
             # Print from the queue
             self.outer.print_list.queuePrint(printerID)
+
+            self.outer.binary.release()
+
+            self.outer.semaphore.release()
 
     # Machine class
     class machineThread(threading.Thread):

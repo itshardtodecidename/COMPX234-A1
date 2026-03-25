@@ -106,7 +106,7 @@ class Assignment1:
             # Acquire counting semaphore (wait for an available printer)
             
             # Acquire binary semaphore for mutual exclusion of the print queue
-
+            
             # Both semaphores acquired
             print(f"Machine {id} will proceed")
         
