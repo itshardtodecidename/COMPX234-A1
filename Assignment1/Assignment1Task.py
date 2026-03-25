@@ -68,9 +68,11 @@ class Assignment1:
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
                 
+                
                 # Grab the request at the head of the queue and print it
                 # Write code here
                 self.printDox(self.printerID)
+                
 
         def printerSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_PRINTER_SLEEP)
@@ -101,15 +103,40 @@ class Assignment1:
                 self.machineSleep()
                 # Machine wakes up and sends a print request
                 # Write code here
-                self.printRequest(self,self.machineID)
+                # Check if it is safe to send a request by acquiring semaphores
+                self.isRequestSafe(self.machineID)
+                # Both semaphores have been acquired, now send a print request
+                self.printRequest(self.machineID)
+                # Release the binary semaphore after inserting the print request
+                self.postRequest(self.machineID)
+              
 
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
             time.sleep(sleepSeconds)
 
+          # Write code here for Acquiring the Counting Semaphore
+        def isRequestSafe(self, id):
+            print(f"Machine {id} Checking availability")
+            # Acquire counting semaphore (wait for an available printer)
+            self.outer.semaphore.acquire()
+            # Acquire binary semaphore for mutual exclusion of the print queue
+            self.outer.binary.acquire()
+            
+            # Both semaphores acquired
+            print(f"Machine {id} will proceed")
+        
         def printRequest(self, id):
             print(f"Machine {id} Sent a print request")
             # Build a print document
             doc = printDoc(f"My name is machine {id}", id)
             # Insert it in the print queue
             self.outer.print_list.queueInsert(doc)
+
+        # Write code here for postRequest, i.e., after inserting the print request
+        def postRequest(self, id):
+            print(f"Machine {id} Releasing binary semaphore")
+            # Release the binary semaphore
+            self.outer.binary.release()
+
+        
