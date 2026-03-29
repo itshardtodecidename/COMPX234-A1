@@ -28,7 +28,7 @@ class Assignment1:
         # Write code here
         for i in range(self.NUM_MACHINES):
             m=self.machineThread(i,self)
-            self.mThreads.append[m]
+            self.mThreads.append(m)
 
             
         # Start all the threads
@@ -36,15 +36,20 @@ class Assignment1:
 
         for i in range(self.NUM_PRINTERS):
             p=self.printerThread(i,self)
-            self.pThreads.append[p]
+            self.pThreads.append(p)
+
+        for m in self.mThreads:
+            m.start()
+
+        for p in self.pThreads:
+            p.start()
+
 
         # Let the simulation run for some time
         time.sleep(self.SIMULATION_TIME)
 
-        for m in self.mThreads:
-            m.start()
-        for p in self.pThreads:
-            p.start()
+        
+        
 
         # Finish simulation
         self.sim_active = False
@@ -84,11 +89,12 @@ class Assignment1:
 
             self.outer.binary.acquire()
             # Print from the queue
-            self.outer.print_list.queuePrint(printerID)
+            if self.outer.print_list.head is not None:
 
+                self.outer.print_list.queuePrint(printerID)
+                self.outer.semaphore.release()
+            
             self.outer.binary.release()
-
-            self.outer.semaphore.release()
 
     # Machine class
     class machineThread(threading.Thread):
